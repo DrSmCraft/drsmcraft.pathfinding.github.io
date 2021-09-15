@@ -82,7 +82,34 @@ body {
 
 }
 
+h1, h2, h3, h4, h5, h6 {
+    color: #ffffff;
+}
 
-.body-title{
+
+.body-title {
     padding-top: 20px;
+    color: #ffffff;
+}
+
+.form-group {
+    padding: 2px;
+}
+
+.form-text, .form-text-inline {
+    color: #ffffff;
+}
+
+.form-label, .form-label-inline {
+    color: #eeeeee;
+
+}
+
+.settings {
+    background: #789AA9;
+}
+
+canvas {
+    background: #789AA9;
+
 }

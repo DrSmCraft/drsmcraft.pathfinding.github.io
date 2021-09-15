@@ -85,3 +85,19 @@ body {
 .body-title{
     padding-top: 20px;
 }
+
+.form-group{
+    padding: 2px;
+}
+
+
+
+
+.settings{
+    background: #F0F0EF;
+}
+
+canvas{
+    background: #F0F0EF;
+
+}

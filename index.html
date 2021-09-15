@@ -23,7 +23,7 @@
 
 
 </head>
-<body id="body" onresize="init()">
+<body id="body">
 
 
 <div class="body-title">
@@ -42,73 +42,33 @@
 
             <script>
 
-                const lineThickness = 1;
-                const spacing = 30;
-                var outputContainer = document.getElementById("output-container");
-                var output = document.getElementById("output");
+                output.onclick = outputClicked;
+                output.on = outputClicked;
+                output.onmousemove = mouseMoveOverOutput;
 
-                function init() {
-
-
-                    var size = Math.min(outputContainer.clientWidth, outputContainer.clientHeight)
-                    output.setAttribute("width", size);
-                    output.setAttribute("height", size);
-
-
-                    var stage = new createjs.Stage(output);
-
-
-                    var shape = new createjs.Shape();
-                    for (let y = 0; y < output.clientHeight / spacing; y++) {
-                        let startx = 0;
-                        let starty = y * spacing - lineThickness / 2;
-                        let width = size;
-                        let height = lineThickness;
-
-                        shape.graphics.beginFill("black").drawRect(startx, starty, width, height);
-                    }
-
-                    for (let x = 0; x < output.clientWidth / spacing; x++) {
-                        let startx = x * spacing - lineThickness / 2;
-                        let starty = 0;
-                        let width = lineThickness;
-                        let height = size;
-
-                        shape.graphics.beginFill("black").drawRect(startx, starty, width, height);
-                    }
-
-                    stage.clear();
-
-                    stage.addChild(shape);
-                    stage.update();
-
-                }
-
-
-                init();
-                // output.onmouseover = function (e) {
-                //     console.log(e.clientX, e.clientY);
-                // }
 
             </script>
         </div>
 
-        <div class="col-lg-2 ">
-            <div class="container d-block mx-auto"
+        <div class="col-lg-2">
+            <div class="settings container d-block mx-auto"
                  style="border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;">
-                <form>
+                <h5 class="text-center" style="margin: 5px;">
+                    Settings
+                </h5>
+                <form id="settings-form" onsubmit="return false">
                     <div class="form-group">
                         <div class="form-text">
                             Algorithm
                         </div>
                         <div class="form-check form-check-inline">
-                            <input id="dijkstraRadio" class="form-check-input" type="radio" name="algorithm" checked>
-                            <label for="dijkstraRadio" class="form-label">Dijkstra's </label>
+                            <input id="dijkstra-radio" class="form-check-input" type="radio" name="algorithm" checked>
+                            <label for="dijkstra-radio" class="form-label">Dijkstra's </label>
 
                         </div>
                         <div class="form-check form-check-inline">
-                            <input id="aStarRadio" class="form-check-input" type="radio" name="algorithm">
-                            <label for="aStarRadio" class="form-label"> A* </label>
+                            <input id="aStar-radio" class="form-check-input" type="radio" name="algorithm">
+                            <label for="aStar-radio" class="form-label"> A* </label>
                         </div>
                     </div>
 
@@ -117,13 +77,13 @@
                             Style
                         </div>
                         <div class="form-check form-check-inline">
-                            <input id="gridRadio" class="form-check-input" type="radio" name="style" checked>
-                            <label for="gridRadio" class="form-label">Grid</label>
+                            <input id="grid-radio" class="form-check-input" type="radio" name="style" checked>
+                            <label for="grid-radio" class="form-label">Grid</label>
 
                         </div>
                         <div class="form-check form-check-inline">
-                            <input id="polyRadio" class="form-check-input" type="radio" name="style">
-                            <label for="polyRadio" class="form-label"> Poly </label>
+                            <input id="poly-radio" class="form-check-input" type="radio" name="style">
+                            <label for="poly-radio" class="form-label"> Poly </label>
                         </div>
                     </div>
                     <hr>
@@ -133,28 +93,39 @@
                             Starting Point
                         </div>
 
-                        <div class="">
+                        <label class="form-label-inline" for="start-x-input">X</label>
+                        <input id="start-x-input" type="number" min="0" max="100" value="0" onclick="startFocus()"
+                               required>
 
-
-                            <input id="startXInput" type="number" min="0" max="100" value="0" required>
-                            <label class="form-text" for="startXInput">X</label>
-
-                            <input id="startYInput" type="number" min="0" max="100" value="0" required>
-                            <label class="form-text" for="startYInput">Y</label>
-                        </div>
+                        <label class="form-label-inline" for="start-y-input">Y</label>
+                        <input id="start-y-input" type="number" min="0" max="100" value="0" onclick="startFocus()"
+                               required>
                     </div>
 
                     <div class="form-group">
                         <div class="form-text">
                             Ending Point
                         </div>
+
+                        <label class="form-text-inline" for="end-x-input">X</label>
+                        <input id="end-x-input" type="number" min="0" max="100" value="1" onclick="endFocus()" required>
+
+                        <label class="form-text-inline" for="end-y-input">Y</label>
+                        <input id="end-y-input" type="number" min="0" max="100" value="1" onclick="endFocus()" required>
                     </div>
-                    <p>Obstical Points</p>
+
+                    <div class="form-group">
+                        <div class="form-text">Obstacle Points</div>
+
+                        <select class="form-control" id="obstacle-listbox" size="5" onclick="obstacleFocus()">
+
+                        </select>
+                    </div>
 
 
-                    <input class="form-submit mx-auto d-block" type="submit" onsubmit="function submitData() {
-                      return false;
-                    }">
+                    <div class="form-group">
+                        <input class="form-submit mx-auto d-block" type="submit">
+                    </div>
                 </form>
 
 
