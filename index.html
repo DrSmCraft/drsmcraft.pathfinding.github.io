@@ -4,60 +4,182 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="css/bootstrap-grid.css">
-    <link rel="stylesheet" href="css/bootstrap-reboot.css">
-    <link rel="stylesheet" href="css/bootstrap-utilities.css">
-    <link rel="stylesheet" href="css/style.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="js/bootstrap/bootstrap.js"></script>
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>-->
+    <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+    <!--    <script src="js/bootstrap/bootstrap.min.js"></script>-->
+
+
     <script src="js/createjs/easeljs-NEXT.js"></script>
     <script src="js/script.js"></script>
 
 
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-grid.css">
+    <link rel="stylesheet" href="css/bootstrap-reboot.css">
+    <link rel="stylesheet" href="css/bootstrap-utilities.css">
+    <link id="theme-style" rel="stylesheet" href="css/style-light.css">
+
+
 </head>
-<body id="body">
+<body id="body" onresize="init()">
 
 
+<div class="body-title">
+    <h2 class="text-center text-capitalize">Pathfinding Algorithm Visualizer</h2>
+    <h6 class="text-center"><i>Made by DrSmCraft</i></h6>
+    <hr>
+</div>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-9" >
+        <div id="output-container" class="col-lg-10 ">
 
-            <canvas id="output" style="border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;">
+            <canvas id="output" class="mx-auto d-block img-fluid"
+                    style="border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;">
 
             </canvas>
 
             <script>
-                console.log("sdfsdfsdfsdfsd");
-                var stage = new createjs.Stage("output");
-                console.log(stage);
 
-                createjs.Shape();
-                let circle = createjs.Shape("black");
-                circle.drawCircle(0, 0, 50);
-                console.log(circle);
+                const lineThickness = 1;
+                const spacing = 30;
+                var outputContainer = document.getElementById("output-container");
+                var output = document.getElementById("output");
 
-                circle.x = 100;
-                circle.y = 100;
-                stage.addChild(circle);
-                stage.update();
+                function init() {
+
+
+                    var size = Math.min(outputContainer.clientWidth, outputContainer.clientHeight)
+                    output.setAttribute("width", size);
+                    output.setAttribute("height", size);
+
+
+                    var stage = new createjs.Stage(output);
+
+
+                    var shape = new createjs.Shape();
+                    for (let y = 0; y < output.clientHeight / spacing; y++) {
+                        let startx = 0;
+                        let starty = y * spacing - lineThickness / 2;
+                        let width = size;
+                        let height = lineThickness;
+
+                        shape.graphics.beginFill("black").drawRect(startx, starty, width, height);
+                    }
+
+                    for (let x = 0; x < output.clientWidth / spacing; x++) {
+                        let startx = x * spacing - lineThickness / 2;
+                        let starty = 0;
+                        let width = lineThickness;
+                        let height = size;
+
+                        shape.graphics.beginFill("black").drawRect(startx, starty, width, height);
+                    }
+
+                    stage.clear();
+
+                    stage.addChild(shape);
+                    stage.update();
+
+                }
+
+
+                init();
+                // output.onmouseover = function (e) {
+                //     console.log(e.clientX, e.clientY);
+                // }
 
             </script>
         </div>
 
-        <div class="col-lg-3" >
-            <div class="container" style="border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;" >
-                <p>Algorithm</p>
-                <p>Style</p>
+        <div class="col-lg-2 ">
+            <div class="container d-block mx-auto"
+                 style="border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;">
+                <form>
+                    <div class="form-group">
+                        <div class="form-text">
+                            Algorithm
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input id="dijkstraRadio" class="form-check-input" type="radio" name="algorithm" checked>
+                            <label for="dijkstraRadio" class="form-label">Dijkstra's </label>
 
-                <p>Initial point</p>
-                <p>Target Point</p>
-                <p>Obstical Points</p>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input id="aStarRadio" class="form-check-input" type="radio" name="algorithm">
+                            <label for="aStarRadio" class="form-label"> A* </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-text">
+                            Style
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input id="gridRadio" class="form-check-input" type="radio" name="style" checked>
+                            <label for="gridRadio" class="form-label">Grid</label>
+
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input id="polyRadio" class="form-check-input" type="radio" name="style">
+                            <label for="polyRadio" class="form-label"> Poly </label>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="form-group">
+                        <div class="form-text">
+                            Starting Point
+                        </div>
+
+                        <div class="">
+
+
+                            <input id="startXInput" type="number" min="0" max="100" value="0" required>
+                            <label class="form-text" for="startXInput">X</label>
+
+                            <input id="startYInput" type="number" min="0" max="100" value="0" required>
+                            <label class="form-text" for="startYInput">Y</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-text">
+                            Ending Point
+                        </div>
+                    </div>
+                    <p>Obstical Points</p>
+
+
+                    <input class="form-submit mx-auto d-block" type="submit" onsubmit="function submitData() {
+                      return false;
+                    }">
+                </form>
 
 
             </div>
         </div>
+    </div>
+
+    <div class="">
+
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="themeRadio" id="lightThemeRadio" value="Light"
+                   onclick="setThemeLight()" checked>
+            <label class="form-check-label" for="lightThemeRadio">
+                Light
+            </label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="themeRadio" id="darkThemeRadio" value="Dark"
+                   onclick="setThemeDark()">
+            <label class="form-check-label" for="darkThemeRadio">
+                Dark
+            </label>
+        </div>
+
+
     </div>
 </div>
 

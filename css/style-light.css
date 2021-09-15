@@ -1,0 +1,87 @@
+
+body {
+    background: #ffffff;
+    /*transition: all 1s ease-in-out;*/
+    animation: backgroundColorChange 20s infinite;
+}
+
+@keyframes backgroundColorChange {
+    0% {
+        background: #F8F8FB;
+    }
+    12% {
+        background: #EBEBEE;
+
+    }
+    25% {
+        background: #E7E7EA;
+    }
+    37% {
+        background: #D4D4DC;
+    }
+    50% {
+        background: #C8C8DC;
+    }
+    67% {
+        background: #D4D4DC;
+
+    }
+    75% {
+        background: #E7E7EA;
+    }
+    87% {
+        background: #EBEBEE;
+
+    }
+    100% {
+        background: #F8F8FB;
+    }
+
+
+}
+
+
+.social-icon {
+    padding-left: 2px;
+    padding-right: 2px;
+    fill: white;
+
+}
+
+.social-icon:hover {
+    padding-left: 2px;
+    padding-right: 2px;
+    fill: #bddcff;
+
+
+}
+
+.project-card {
+    text-underline-style: none;
+    color: black;
+    text-decoration: none;
+
+}
+
+.project-card:hover {
+
+    border: #0a53be;
+    border-radius: 10px;
+    border-style: groove;
+    color: black;
+    text-underline-style: none;
+    text-decoration: none;
+
+}
+
+
+#about-card {
+    width: 30%;
+    margin-top: 50px;
+    margin-bottom: 20px;
+
+}
+
+.body-title{
+    padding-top: 20px;
+}
