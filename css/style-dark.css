@@ -100,16 +100,21 @@ h1, h2, h3, h4, h5, h6 {
     color: #ffffff;
 }
 
-.form-label, .form-label-inline {
+.form-label, .form-label-inline, .form-check-label {
     color: #eeeeee;
 
 }
 
-.settings {
+.settings, .controls {
     background: #789AA9;
+    border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;
 }
 
 canvas {
     background: #789AA9;
+    border-radius: 2px;
+    border-style: groove;
+    border-color: #0c4128;
+    margin: 10px;
 
 }

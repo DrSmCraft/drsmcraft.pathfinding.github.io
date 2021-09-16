@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Pathfinding Algorithm Visualizer</title>
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -31,32 +31,51 @@
     <h6 class="text-center"><i>Made by DrSmCraft</i></h6>
     <hr>
 </div>
+
+
 <div class="container-fluid">
     <div class="row">
-        <div id="output-container" class="col-lg-10 ">
+        <div id="output-container" class="col-lg-10">
 
-            <canvas id="output" class="mx-auto d-block img-fluid"
-                    style="border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;">
+            <canvas id="output" class="mx-auto d-block img-fluid" tabindex="1">
 
             </canvas>
 
             <script>
 
+                var output = document.getElementById("output");
+                output.onmousedown = outputOnMouseDown;
+                output.onmouseup = outputOnMouseUp;
                 output.onclick = outputClicked;
-                output.on = outputClicked;
                 output.onmousemove = mouseMoveOverOutput;
+                document.addEventListener("keydown", outputKeyDown);
+                document.addEventListener("keyup", outputKeyUp);
 
 
             </script>
+
+
+            <div class="controls container-fluid">
+                <div class="row">
+                    <div class="col-3 mx-auto d-block ">
+                        <input class="form-submit" type="button" value="Stop" onclick="enableSettings();">
+                    </div>
+                    <div class="col-3 mx-auto d-block">
+
+                        <input class="form-submit" type="button" value="Pause">
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <div class="col-lg-2">
             <div class="settings container d-block mx-auto"
-                 style="border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;">
+                 style="">
                 <h5 class="text-center" style="margin: 5px;">
                     Settings
                 </h5>
-                <form id="settings-form" onsubmit="return false">
+                <form id="settings-form" onsubmit="startVisualization(); return false;">
                     <div class="form-group">
                         <div class="form-text">
                             Algorithm
@@ -117,14 +136,14 @@
                     <div class="form-group">
                         <div class="form-text">Obstacle Points</div>
 
-                        <select class="form-control" id="obstacle-listbox" size="5" onclick="obstacleFocus()">
+                        <select id="obstacle-listbox" class="form-control" size="5" onclick="obstacleFocus()">
 
                         </select>
                     </div>
 
 
                     <div class="form-group">
-                        <input class="form-submit mx-auto d-block" type="submit">
+                        <input class="form-submit mx-auto d-block" type="submit" value="Start">
                     </div>
                 </form>
 
@@ -133,27 +152,52 @@
         </div>
     </div>
 
-    <div class="">
-
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="themeRadio" id="lightThemeRadio" value="Light"
-                   onclick="setThemeLight()" checked>
-            <label class="form-check-label" for="lightThemeRadio">
-                Light
-            </label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="themeRadio" id="darkThemeRadio" value="Dark"
-                   onclick="setThemeDark()">
-            <label class="form-check-label" for="darkThemeRadio">
-                Dark
-            </label>
-        </div>
-
-
-    </div>
 </div>
 
+<footer class="">
+
+
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="themeRadio" id="lightThemeRadio" value="Light"
+               onclick="setThemeLight()" checked>
+        <label class="form-check-label" for="lightThemeRadio">
+            Light
+        </label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="themeRadio" id="darkThemeRadio" value="Dark"
+               onclick="setThemeDark()">
+        <label class="form-check-label" for="darkThemeRadio">
+            Dark
+        </label>
+    </div>
+
+    <script>
+
+        let pairs = document.cookie.split(";");
+        for (let i = 0; i < pairs.length; i++) {
+            let cookie = pairs[i].split("=");
+
+
+            if (cookie[0] === "theme") {
+
+                if (cookie[1] === "light") {
+                    setThemeLight();
+                    document.getElementById("lightThemeRadio").checked = true;
+                    document.getElementById("darkThemeRadio").checked = false;
+
+                }
+                if (cookie[1] === "dark") {
+                    setThemeDark();
+                    document.getElementById("lightThemeRadio").checked = false;
+                    document.getElementById("darkThemeRadio").checked = true;
+
+                }
+            }
+        }
+    </script>
+
+</footer>
 
 </body>
 </html>

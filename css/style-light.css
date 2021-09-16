@@ -82,22 +82,25 @@ body {
 
 }
 
-.body-title{
+.body-title {
     padding-top: 20px;
 }
 
-.form-group{
+.form-group {
     padding: 2px;
 }
 
 
-
-
-.settings{
+.settings, .controls {
     background: #F0F0EF;
+    border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;
 }
 
-canvas{
+canvas {
     background: #F0F0EF;
+    border-radius: 2px;
+    border-style: groove;
+    border-color: #0c4128;
+    margin: 10px;
 
 }
