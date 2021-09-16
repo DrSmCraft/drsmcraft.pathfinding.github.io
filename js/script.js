@@ -10,6 +10,7 @@ var endFocused = false;
 var obstacleFocused = false;
 var mouseDragging = false;
 var ctrlDown = false;
+var visualizing = false;
 
 function startFocus(e) {
     startFocused = true;
@@ -62,7 +63,11 @@ function hashPosition(x, y) {
 }
 
 
-function handleMouse(e, dragging) {
+function handleMouseOverOutput(e, dragging) {
+
+    if (visualizing) {
+        return;
+    }
     let sender = e.target || e.srcElement;
     let posX = mousePosXToGridX(e.x, sender.getBoundingClientRect().x);
     let posY = mousePosYToGridY(e.y, sender.getBoundingClientRect().y);
@@ -106,7 +111,7 @@ function handleMouse(e, dragging) {
 }
 
 function outputClicked(e) {
-    handleMouse(e, true);
+    handleMouseOverOutput(e, true);
 
 }
 
@@ -201,7 +206,7 @@ function drawMouseOverlay(outputContainer, output, stage) {
 
 function mouseMoveOverOutput(e) {
 
-    handleMouse(e, mouseDragging);
+    handleMouseOverOutput(e, mouseDragging);
 }
 
 
@@ -263,10 +268,30 @@ function enableSettings() {
 
 }
 
+function enableControls() {
+    document.getElementById("run-btn").removeAttribute("disabled");
+    document.getElementById("run-once-btn").removeAttribute("disabled");
+    document.getElementById("stop-btn").removeAttribute("disabled");
 
+}
 
-function startVisualization(){
+function disableControls() {
+    document.getElementById("run-btn").setAttribute("disabled", "");
+    document.getElementById("run-once-btn").setAttribute("disabled", "");
+    document.getElementById("stop-btn").setAttribute("disabled", "");
+
+}
+
+function startVisualization() {
     disableSettings();
+    enableControls();
+    visualizing = true;
+}
+
+function stopVisualization() {
+    enableSettings();
+    disableControls();
+    visualizing = false;
 }
 
 createjs.Ticker.addEventListener("tick", mainLoop);

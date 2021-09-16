@@ -93,7 +93,18 @@ body {
 
 .settings, .controls {
     background: #F0F0EF;
-    border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;
+    border-radius: 2px;
+    border-style: groove;
+    border-color: #0c4128;
+    margin: 10px;
+}
+
+
+.control-btn {
+    margin: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+
 }
 
 canvas {
