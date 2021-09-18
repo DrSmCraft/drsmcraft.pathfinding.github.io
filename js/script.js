@@ -12,6 +12,22 @@ var mouseDragging = false;
 var ctrlDown = false;
 var visualizing = false;
 
+let pathfinder = null;
+
+function getListOfPoints() {
+    let lst = []
+    for (let y = 0; y < size + 1; y++) {
+        for (let x = 0; x < size + 1; x++) {
+            let hash = hashPosition(x, y);
+            if (!hash in obstacles) {
+                lst.push({x: x, y: y});
+            }
+
+        }
+    }
+    return lst;
+}
+
 function startFocus(e) {
     startFocused = true;
     endFocused = false;
@@ -56,10 +72,6 @@ function outputKeyUp(e) {
     if (e.key === "Control") {
         ctrlDown = false;
     }
-}
-
-function hashPosition(x, y) {
-    return (x * 0x1f1f1f1f) ^ y;
 }
 
 
@@ -286,14 +298,28 @@ function startVisualization() {
     disableSettings();
     enableControls();
     visualizing = true;
+    pathfinder = new Dijkstra(getListOfPoints(), {x: 0, y: 0}, {x: 5, y: 5}, obstacles);
+
+
 }
 
 function stopVisualization() {
     enableSettings();
     disableControls();
     visualizing = false;
+    pathfinder = null;
 }
 
+
+
+function runVisualizationOneStep(){
+    if(!visualizing || pathfinder == null){
+        return;
+    }
+    pathfinder.runOneStep();
+
+
+}
 createjs.Ticker.addEventListener("tick", mainLoop);
 
 function mainLoop(e) {

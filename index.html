@@ -12,6 +12,7 @@
 
 
     <script src="js/createjs/easeljs-NEXT.js"></script>
+    <script src="js/pathfinder.js"></script>
     <script src="js/script.js"></script>
 
 
@@ -57,7 +58,9 @@
 
             <div class="controls col-6 mx-auto  align-content-center align-self-center text-center">
                 <button id="run-btn" class="form-submit control-btn" onclick="" disabled>Run</button>
-                <button id="run-once-btn" class="form-submit control-btn" disabled>Run 1x</button>
+                <button id="run-once-btn" class="form-submit control-btn" disabled onclick="runVisualizationOneStep();">
+                    Run 1 Step
+                </button>
                 <button id="stop-btn" class=" form-submit control-btn" onclick="stopVisualization();"
                         disabled>
                     Stop
