@@ -107,7 +107,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .settings, .controls {
     background: #789AA9;
-    border-radius: 2px; border-style: groove; border-color: #0c4128; margin: 10px;
+    border-radius: 2px;
+    border-style: groove;
+    border-color: #0c4128;
+    margin: 10px;
+}
+
+
+.control-btn {
+    margin: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+
+.theme-switcher {
+    padding: 10px;
 }
 
 canvas {
@@ -119,6 +134,26 @@ canvas {
 
 }
 
+
+.source {
+    color: red;
+}
+
+.target {
+    color: blue;
+}
+
+.distance {
+    color: #ffffff;
+}
+
+
 .obstacle {
-    color: #20c997;
+    /*color: #002e52;*/
+    color: #000000;
+
+}
+
+.path {
+    color: #0068B8;
 }

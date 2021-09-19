@@ -6,13 +6,26 @@ const DEFAULT_TARGET_COLOR = "#0000ff";
 const DEFAULT_PATH_COLOR = "#ff00ff";
 const DEFAULT_OBSTACLE_COLOR = "#777777";
 
-
+var currentTheme = "light";
 var distLabelColor = DEFAULT_DIST_LABEL_COLOR;
 var sourceColor = DEFAULT_SOURCE_COLOR;
 var targetColor = DEFAULT_TARGET_COLOR;
 var pathColor = DEFAULT_PATH_COLOR;
 var obstacleColor = DEFAULT_OBSTACLE_COLOR;
-
+var mousePosX = -1;
+var mousePosY = -1;
+var size = 700;
+var obstacles = {}
+var changed = true;
+var startFocused = false;
+var endFocused = false;
+var obstacleFocused = false;
+var mouseDragging = false;
+var ctrlDown = false;
+var visualizing = false;
+var pathfinder = null;
+var distList = [];
+var pathToTarget = [];
 
 function extractPropertyFomCss(css, propertyToExtract) {
     let start = css.indexOf("{") + 1;
@@ -37,84 +50,94 @@ function extractPropertyFomCss(css, propertyToExtract) {
 
 }
 
-function setCssColors() {
-    let sheet = document.styleSheets[4];
-    let distColorChanged = false;
-    let sourceColorChanged = false;
-    let targetColorChanged = false;
-    let pathColorChanged = false;
-    let obsColorChanged = false;
+function getStyle(selector) {
+    var cssText = "";
 
-    for (let j = 0; j < sheet.rules.length; j++) {
-        let rule = sheet.rules[j];
-        if (rule.selectorText !== undefined) {
-            let c = extractPropertyFomCss(rule.cssText, "color");
+    for (let i = 0; i < document.styleSheets.length; i++) {
 
-            if (c == null) {
-                continue;
-            }
+        var classes = document.styleSheets[i].rules || document.styleSheets[i].cssRules;
 
-            console.log(rule.selectorText);
-
-            if (rule.selectorText.indexOf(".source") > -1) {
-                sourceColor = c;
-                sourceColorChanged = true;
-            } else if (rule.selectorText.indexOf(".target") > -1) {
-                targetColor = c;
-                targetColorChanged = true;
-            } else if (rule.selectorText.indexOf(".distance") > -1) {
-                distLabelColor = c;
-                distColorChanged = true;
-            } else if (rule.selectorText.indexOf(".obstacle") > -1) {
-                obstacleColor = c;
-
-                obsColorChanged = true;
-            } else if (rule.selectorText.indexOf(".path") > -1) {
-                pathColor = c;
-                pathColorChanged = true;
+        for (var x = 0; x < classes.length; x++) {
+            if (classes[x].selectorText == selector) {
+                cssText += classes[x].cssText || classes[x].style.cssText;
             }
         }
+    }
+    return cssText;
+}
 
-    }
+function setCssColors() {
 
-    console.log(obsColorChanged);
-    if (!distColorChanged) {
-        distLabelColor = DEFAULT_DIST_LABEL_COLOR;
-    }
-    if (!sourceColorChanged) {
-        distLabelColor = DEFAULT_SOURCE_COLOR;
-    }
-    if (!targetColorChanged) {
-        distLabelColor = DEFAULT_TARGET_COLOR;
-    }
-    if (!pathColorChanged) {
-        distLabelColor = DEFAULT_PATH_COLOR;
-    }
-    if (!obsColorChanged) {
-        distLabelColor = DEFAULT_OBSTACLE_COLOR;
-    }
-
-    changed = true;
+    obstacleColor = extractPropertyFomCss(getStyle(".obstacle"), "color");
+    sourceColor = extractPropertyFomCss(getStyle(".source"), "color");
+    targetColor = extractPropertyFomCss(getStyle(".target"), "color");
+    pathColor = extractPropertyFomCss(getStyle(".path"), "color");
+    distLabelColor = extractPropertyFomCss(getStyle(".distance"), "color");
 
 }
 
+function setThemeLight() {
+    currentTheme = "light";
+    let link = document.getElementById("theme-style");
+    link.setAttribute("href", "css/style-light.css");
+    document.getElementById("theme-switch-label").innerText = "Light";
 
-var mousePosX = -1;
-var mousePosY = -1;
-var size = 700;
-var obstacles = {}
-var changed = true;
+    let date = new Date();
+    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + date.toUTCString();
 
-var startFocused = false;
-var endFocused = false;
-var obstacleFocused = false;
-var mouseDragging = false;
-var ctrlDown = false;
-var visualizing = false;
-var pathfinder = null;
-var distList = [];
-var pathToTarget = [];
+    document.cookie = "theme=light; " + expires + "; path=/";
+    setCssColors();
+    return false;
+}
 
+function setThemeDark() {
+    currentTheme = "dark";
+    let link = document.getElementById("theme-style");
+    link.setAttribute("href", "css/style-dark.css");
+
+    document.getElementById("theme-switch-label").innerText = "Dark";
+
+
+    let date = new Date();
+    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + date.toUTCString();
+
+    document.cookie = "theme=dark; " + expires + "; path=/";
+    setCssColors();
+    return false;
+}
+
+function setThemeFromCookie() {
+    let pairs = document.cookie.split(";");
+    for (let i = 0; i < pairs.length; i++) {
+        let cookie = pairs[i].split("=");
+
+        if (cookie[0] === "theme") {
+
+            if (cookie[1] === "light") {
+                setThemeLight();
+                document.getElementById("theme-switch").checked = false;
+
+            }
+            if (cookie[1] === "dark") {
+                setThemeDark();
+                document.getElementById("theme-switch").checked = true;
+
+            }
+        }
+    }
+
+}
+
+function toggleTheme() {
+    if (currentTheme == "light") {
+        setThemeDark();
+    } else {
+        setThemeLight();
+    }
+    changed = true;
+}
 
 function getListOfPoints() {
     let lst = []
@@ -159,7 +182,6 @@ function outputOnMouseDown(e) {
     mouseDragging = true;
 }
 
-
 function outputOnMouseUp(e) {
     mouseDragging = false;
 }
@@ -175,7 +197,6 @@ function outputKeyUp(e) {
         ctrlDown = false;
     }
 }
-
 
 function handleMouseOverOutput(e, dragging) {
     if (visualizing) {
@@ -250,34 +271,6 @@ function mousePosYToGridY(y, offsetY) {
     return Math.floor((y - offsetY) / SPACING);
 }
 
-function setThemeLight() {
-    let link = document.getElementById("theme-style");
-    link.setAttribute("href", "css/style-light.css");
-
-    let date = new Date();
-    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
-    const expires = "expires=" + date.toUTCString();
-
-    document.cookie = "theme=light; " + expires + "; path=/";
-    setCssColors();
-    return false;
-}
-
-function setThemeDark() {
-    let link = document.getElementById("theme-style");
-    link.setAttribute("href", "css/style-dark.css");
-
-
-    let date = new Date();
-    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
-    const expires = "expires=" + date.toUTCString();
-
-    document.cookie = "theme=dark; " + expires + "; path=/";
-    setCssColors();
-    return false;
-}
-
-
 function drawGrid(outputContainer, output, stage) {
 
     const numGrid = 20;
@@ -314,7 +307,6 @@ function drawGrid(outputContainer, output, stage) {
     stage.addChild(shape);
 }
 
-
 function drawMouseOverlay(outputContainer, output, stage) {
     var shape = new createjs.Shape();
     shape.graphics.beginFill("yellow").drawRect(mousePosX * SPACING, mousePosY * SPACING, SPACING, SPACING);
@@ -331,17 +323,15 @@ function mouseMoveOverOutput(e) {
     handleMouseOverOutput(e, mouseDragging);
 }
 
-
 function drawStartOverlay(outputContainer, output, stage, posX, posY) {
     var shape = new createjs.Shape();
-    shape.graphics.beginFill(sourceColor).drawRect(posX * SPACING, posY * SPACING, SPACING, SPACING);
+    shape.graphics.beginFill(sourceColor || DEFAULT_SOURCE_COLOR).drawRect(posX * SPACING + LINE_THICKNESS / 2, posY * SPACING + LINE_THICKNESS / 2, SPACING - LINE_THICKNESS / 2, SPACING - LINE_THICKNESS / 2);
     stage.addChild(shape);
 }
 
-
 function drawEndOverlay(outputContainer, output, stage, posX, posY) {
     var shape = new createjs.Shape();
-    shape.graphics.beginFill(targetColor).drawRect(posX * SPACING, posY * SPACING, SPACING, SPACING);
+    shape.graphics.beginFill(targetColor || DEFAULT_TARGET_COLOR).drawRect(posX * SPACING + LINE_THICKNESS / 2, posY * SPACING + LINE_THICKNESS / 2, SPACING - LINE_THICKNESS / 2, SPACING - LINE_THICKNESS / 2);
     stage.addChild(shape);
 }
 
@@ -351,7 +341,7 @@ function drawObstacles(outputContainer, output, stage) {
     for (let key in obstacles) {
 
         let pt = obstacles[key];
-        shape.graphics.beginFill(obstacleColor).drawRect(pt.x * SPACING, pt.y * SPACING, SPACING, SPACING);
+        shape.graphics.beginFill(obstacleColor || DEFAULT_OBSTACLE_COLOR).drawRect(pt.x * SPACING + LINE_THICKNESS / 2, pt.y * SPACING + LINE_THICKNESS / 2, SPACING - LINE_THICKNESS / 2, SPACING - LINE_THICKNESS / 2);
 
     }
     stage.addChild(shape);
@@ -364,12 +354,11 @@ function drawPathToTarget(outputContainer, output, stage) {
     for (let i = 0; i < pathToTarget.length; i++) {
 
         let pt = pathToTarget[i];
-        shape.graphics.beginFill(pathColor).drawRect(pt.x * SPACING, pt.y * SPACING, SPACING, SPACING);
+        shape.graphics.beginFill(pathColor || DEFAULT_PATH_COLOR).drawRect(pt.x * SPACING + LINE_THICKNESS / 2, pt.y * SPACING + LINE_THICKNESS / 2, SPACING - LINE_THICKNESS / 2, SPACING - LINE_THICKNESS / 2);
 
     }
     stage.addChild(shape);
 }
-
 
 function drawDistances(outputContainer, output, stage) {
 
@@ -378,15 +367,19 @@ function drawDistances(outputContainer, output, stage) {
         let pt = distList[i].point;
         let dist = distList[i].dist;
 
-        let text = new createjs.Text(dist + "", "20px Arial", distLabelColor);
-        text.x = pt.x * SPACING + (SPACING * 0.3);
-        text.y = pt.y * SPACING + (SPACING * 0.3);
+        let text = new createjs.Text(dist + "", "18px Helvetica", distLabelColor || DEFAULT_DIST_LABEL_COLOR);
+        text.set({
+            textAlign: "center",
+            textBaseline: "middle",
+            x: pt.x * SPACING + SPACING / 2,
+            y: pt.y * SPACING + SPACING / 2
+        })
+
         stage.addChild(text);
 
 
     }
 }
-
 
 function disableSettings() {
     document.getElementById("poly-radio").setAttribute("disabled", "");
@@ -404,7 +397,6 @@ function disableSettings() {
     document.getElementById("start-btn").setAttribute("disabled", "");
 
 }
-
 
 function enableSettings() {
     document.getElementById("poly-radio").removeAttribute("disabled");
@@ -460,8 +452,8 @@ function stopVisualization() {
     pathfinder = null;
     distList = [];
     pathToTarget = [];
+    changed = true;
 }
-
 
 function runVisualization() {
     if (!visualizing || pathfinder == null) {
@@ -492,11 +484,12 @@ function runVisualizationOneStep() {
     }
 
 
-    distList = pathfinder.getDist();
+    distList = pathfinder.getDistances();
     changed = true;
 
 
 }
+
 
 createjs.Ticker.addEventListener("tick", mainLoop);
 
@@ -506,16 +499,17 @@ function mainLoop(e) {
         return;
     }
 
+    setCssColors();
     let startXInput = document.getElementById("start-x-input");
     let startYInput = document.getElementById("start-y-input");
-    startXInput.setAttribute("max", size / SPACING - 1);
-    startYInput.setAttribute("max", size / SPACING - 1);
+    startXInput.setAttribute("max", Math.floor(size / SPACING) - 1);
+    startYInput.setAttribute("max", Math.floor(size / SPACING) - 1);
 
 
     let endXInput = document.getElementById("end-x-input");
     let endYInput = document.getElementById("end-y-input");
-    startXInput.setAttribute("max", size / SPACING - 1);
-    startYInput.setAttribute("max", size / SPACING - 1);
+    startXInput.setAttribute("max", Math.floor(size / SPACING) - 1);
+    startYInput.setAttribute("max", Math.floor(size / SPACING) - 1);
 
 
     let startX = startXInput.value;

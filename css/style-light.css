@@ -115,6 +115,10 @@ canvas {
     margin: 10px;
 }
 
+.theme-switcher {
+    padding: 10px;
+}
+
 .source {
     color: red;
 }
@@ -124,11 +128,16 @@ canvas {
 }
 
 
+.obstacle {
+    color: #74746d;
+}
+
 
 .distance {
-    color: #6a1a21;
+    color: #000000;
 }
 
 .path {
     color: #0dcaf0;
 }
+

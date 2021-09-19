@@ -1,25 +1,22 @@
 function hashPosition() {
-
-    // switch (arguments.length) {
-    //     case 1:
-    //         return ((arguments[0].x) * 0x1f1f1f1f) ^ arguments[0].y;
-    //     case 2:
-    //         return ((arguments[0]) * 0x1f1f1f1f) ^ arguments[1];
-    //
-    // }
-
     switch (arguments.length) {
         case 1:
             return "(" + arguments[0].x + "," + arguments[0].y + ")";
         case 2:
             return "(" + arguments[0] + "," + arguments[1] + ")";
-
     }
 }
 
+function euclideanDistance(pt1, pt2) {
+    return Math.sqrt(Math.pow(pt2.x - pt1.x, 2) + Math.pow(pt2.y - pt1.y, 2));
+}
 
-// Taken from https://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode
-class Dijkstra {
+function manhattanDistance(pt1, pt2) {
+    return Math.abs(pt2.x - pt1.x) + Math.abs(pt2.y - pt1.y2);
+}
+
+
+class Pathfinder {
 
     constructor(graph, source, target, obstacles) {
         this.graph = graph;
@@ -27,13 +24,27 @@ class Dijkstra {
         this.target = target;
         this.targetHash = hashPosition(target);
         this.obstacles = obstacles;
-        this.q = {}
-        this.hashes = {}
-        this.dist = {}
-        this.prev = {}
         this.done = false;
         this.step = 0;
         this.reachedTarget = false;
+    }
+
+    runOneStep() {
+
+    }
+
+
+}
+
+// Taken from https://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode
+class Dijkstra extends Pathfinder {
+    constructor(graph, source, target, obstacles) {
+        super(graph, source, target, obstacles);
+        this.q = {};
+        this.hashes = {};
+        this.dist = {};
+        this.prev = {};
+
 
         for (let i = 0; i < graph.length; i++) {
             let point = graph[i];
@@ -47,7 +58,6 @@ class Dijkstra {
         }
         this.dist[hashPosition(source)] = 0;
     }
-
 
     runOneStep() {
         if (this.u == this.targetHash) {
@@ -76,7 +86,7 @@ class Dijkstra {
 
             let v = neighbors[i];
             if (hashPosition(v) in this.q) {
-                let alt = this.dist[this.u] + 1; // In a grid all weights are 1
+                let alt = this.dist[this.u] + 1 + this.heuristicValue(node, this.target); // In a grid all weights are 1
 
                 if (alt < this.dist[hashPosition(v)]) {
                     this.dist[hashPosition(v)] = alt;
@@ -138,7 +148,6 @@ class Dijkstra {
 
     }
 
-
     getPathToTarget() {
         let lst = [];
 
@@ -160,6 +169,25 @@ class Dijkstra {
         }
 
         return lst;
+    }
+
+    heuristicValue(node, targetNode) {
+        return 0;
+    }
+
+
+}
+
+
+class AStart extends Dijkstra {
+    constructor(graph, source, target, obstacles) {
+        super(graph, source, target, obstacles);
+
+    }
+
+
+    heuristicValue(node, targetNode) {
+        return 0;
     }
 
 
