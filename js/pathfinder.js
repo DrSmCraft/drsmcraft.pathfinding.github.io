@@ -1,3 +1,6 @@
+const UPPER_BOUND = 20;
+
+
 function hashPosition() {
     switch (arguments.length) {
         case 1:
@@ -12,9 +15,16 @@ function euclideanDistance(pt1, pt2) {
 }
 
 function manhattanDistance(pt1, pt2) {
-    return Math.abs(pt2.x - pt1.x) + Math.abs(pt2.y - pt1.y2);
+    return Math.abs(pt2.x - pt1.x) + Math.abs(pt2.y - pt1.y);
 }
 
+function penalizeHorizontal(pt1, pt2) {
+    return pt2.x - pt1.x;
+}
+
+function penalizeVertical(pt1, pt2) {
+    return pt2.y - pt1.y;
+}
 
 class Pathfinder {
 
@@ -44,6 +54,7 @@ class Dijkstra extends Pathfinder {
         this.hashes = {};
         this.dist = {};
         this.prev = {};
+        this.allowDiagonals = false;
 
 
         for (let i = 0; i < graph.length; i++) {
@@ -120,26 +131,58 @@ class Dijkstra extends Pathfinder {
 
 
         if (!(hashPosition(left) in this.obstacles)) {
-            if (left.x > -1 && left.x < 23 && left.y > -1 && left.y < 23) {
+            if (left.x > -1 && left.x < UPPER_BOUND && left.y > -1 && left.y < UPPER_BOUND) {
                 nodes.push(left);
             }
         }
 
         if (!(hashPosition(right) in this.obstacles)) {
-            if (right.x > -1 && right.x < 23 && right.y > -1 && right.y < 23) {
+            if (right.x > -1 && right.x < UPPER_BOUND && right.y > -1 && right.y < UPPER_BOUND) {
                 nodes.push(right);
             }
         }
 
         if (!(hashPosition(up) in this.obstacles)) {
-            if (up.x > -1 && up.x < 23 && up.y > -1 && up.y < 23) {
+            if (up.x > -1 && up.x < UPPER_BOUND && up.y > -1 && up.y < UPPER_BOUND) {
                 nodes.push(up);
             }
         }
 
         if (!(hashPosition(down) in this.obstacles)) {
-            if (down.x > -1 && down.x < 23 && down.y > -1 && down.y < 23) {
+            if (down.x > -1 && down.x < UPPER_BOUND && down.y > -1 && down.y < UPPER_BOUND) {
                 nodes.push(down);
+            }
+        }
+
+        if (this.allowDiagonals) {
+            let upperLeft = {x: node.x - 1, y: node.y - 1};
+            let upperRight = {x: node.x + 1, y: node.y - 1};
+            let lowerLeft = {x: node.x - 1, y: node.y + 1};
+            let lowerRight = {x: node.x + 1, y: node.y + 1};
+
+
+            if (!(hashPosition(upperLeft) in this.obstacles)) {
+                if (upperLeft.x > -1 && upperLeft.x < UPPER_BOUND && upperLeft.y > -1 && upperLeft.y < UPPER_BOUND) {
+                    nodes.push(upperLeft);
+                }
+            }
+
+            if (!(hashPosition(upperRight) in this.obstacles)) {
+                if (upperRight.x > -1 && upperRight.x < UPPER_BOUND && upperRight.y > -1 && upperRight.y < UPPER_BOUND) {
+                    nodes.push(upperRight);
+                }
+            }
+
+            if (!(hashPosition(lowerLeft) in this.obstacles)) {
+                if (lowerLeft.x > -1 && lowerLeft.x < UPPER_BOUND && lowerLeft.y > -1 && lowerLeft.y < UPPER_BOUND) {
+                    nodes.push(lowerLeft);
+                }
+            }
+
+            if (!(hashPosition(lowerRight) in this.obstacles)) {
+                if (lowerRight.x > -1 && lowerRight.x < UPPER_BOUND && lowerRight.y > -1 && lowerRight.y < UPPER_BOUND) {
+                    nodes.push(lowerRight);
+                }
             }
         }
 
@@ -179,14 +222,25 @@ class Dijkstra extends Pathfinder {
 }
 
 
-class AStart extends Dijkstra {
+class AStar extends Dijkstra {
     constructor(graph, source, target, obstacles) {
         super(graph, source, target, obstacles);
-
+        this.heuristicType = 'euclidean';
     }
 
 
     heuristicValue(node, targetNode) {
+        if (this.heuristicType == 'euclidean') {
+            return euclideanDistance(node, targetNode);
+        } else if (this.heuristicType == 'manhattan') {
+            return manhattanDistance(node, targetNode);
+        }
+        else if(this.heuristicType == 'penalizeHorizontal'){
+            return penalizeHorizontal(node, targetNode);
+        }
+        else if(this.heuristicType == 'penalizeVertical'){
+            return penalizeVertical(node, targetNode);
+        }
         return 0;
     }
 

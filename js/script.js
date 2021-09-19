@@ -253,6 +253,16 @@ function outputClicked(e) {
 
 }
 
+
+function algorithmClicked() {
+    if ($('#aStar-radio').prop("checked")) {
+        $('#heuristic-collapse').collapse("show");
+    } else {
+        $('#heuristic-collapse').collapse("hide");
+    }
+}
+
+
 function clamp(min, max, value) {
     if (value < min) {
         return min;
@@ -367,7 +377,8 @@ function drawDistances(outputContainer, output, stage) {
         let pt = distList[i].point;
         let dist = distList[i].dist;
 
-        let text = new createjs.Text(dist + "", "18px Helvetica", distLabelColor || DEFAULT_DIST_LABEL_COLOR);
+
+        let text = new createjs.Text(Math.floor(dist), "18px Helvetica", distLabelColor || DEFAULT_DIST_LABEL_COLOR);
         text.set({
             textAlign: "center",
             textBaseline: "middle",
@@ -382,12 +393,9 @@ function drawDistances(outputContainer, output, stage) {
 }
 
 function disableSettings() {
-    document.getElementById("poly-radio").setAttribute("disabled", "");
     document.getElementById("dijkstra-radio").setAttribute("disabled", "");
     document.getElementById("aStar-radio").setAttribute("disabled", "");
-    document.getElementById("grid-radio").setAttribute("disabled", "");
-
-    document.getElementById("poly-radio").setAttribute("disabled", "");
+    document.getElementById("diagonal-check").setAttribute("disabled", "");
     document.getElementById("start-x-input").setAttribute("disabled", "");
     document.getElementById("start-y-input").setAttribute("disabled", "");
     document.getElementById("end-x-input").setAttribute("disabled", "");
@@ -399,12 +407,9 @@ function disableSettings() {
 }
 
 function enableSettings() {
-    document.getElementById("poly-radio").removeAttribute("disabled");
     document.getElementById("dijkstra-radio").removeAttribute("disabled");
     document.getElementById("aStar-radio").removeAttribute("disabled");
-    document.getElementById("grid-radio").removeAttribute("disabled");
-
-    document.getElementById("poly-radio").removeAttribute("disabled");
+    document.getElementById("diagonal-check").removeAttribute("disabled");
     document.getElementById("start-x-input").removeAttribute("disabled");
     document.getElementById("start-y-input").removeAttribute("disabled");
     document.getElementById("end-x-input").removeAttribute("disabled");
@@ -440,7 +445,25 @@ function startVisualization() {
     let endX = document.getElementById("end-x-input").value;
     let endY = document.getElementById("end-y-input").value;
 
-    pathfinder = new Dijkstra(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
+    if ($('#dijkstra-radio').prop("checked")) {
+        pathfinder = new Dijkstra(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
+        pathfinder.allowDiagonals = $("#diagonal-check").prop("checked");
+    } else {
+        pathfinder = new AStar(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
+        pathfinder.allowDiagonals = $("#diagonal-check").prop("checked");
+
+        if ($("#heuristic-type :selected").val() == "Euclidean Distance") {
+            pathfinder.heuristicType = "euclidean";
+        } else if ($("#heuristic-type :selected").val() == "Manhattan Distance") {
+            pathfinder.heuristicType = "manhattan";
+        } else if ($("#heuristic-type :selected").val() == "Penalize Horizontal") {
+            pathfinder.heuristicType = "penalizeHorizontal";
+        } else if ($("#heuristic-type :selected").val() == "Penalize Vertical") {
+            pathfinder.heuristicType = "penalizeVertical";
+
+        }
+
+    }
 
 
 }

@@ -86,33 +86,41 @@
                             Algorithm
                         </div>
                         <div class="form-check form-check-inline">
-                            <input id="dijkstra-radio" class="form-check-input" type="radio" name="algorithm" checked>
+                            <input id="dijkstra-radio" class="form-check-input" type="radio" name="algorithm"
+                                   onclick="algorithmClicked();" checked>
                             <label for="dijkstra-radio" class="form-label">Dijkstra's </label>
 
                         </div>
                         <div class="form-check form-check-inline">
-                            <input id="aStar-radio" class="form-check-input" type="radio" name="algorithm">
+                            <input id="aStar-radio" class="form-check-input" type="radio" name="algorithm"
+                                   onclick="algorithmClicked();">
                             <label for="aStar-radio" class="form-label"> A* </label>
                         </div>
                     </div>
 
+                    <div class="collapse" id="heuristic-collapse">
+                        <div class="form-check form-check-inline">
+                            <label for="heuristic-type">Heuristic Function</label>
+                            <select id="heuristic-type" class="form-control" size="1">
+                                <option>Euclidean Distance</option>
+                                <option>Manhattan Distance</option>
+                                <option>Penalize Horizontal</option>
+                                <option>Penalize Vertical</option>
+
+                            </select>
+                        </div>
+
+                    </div>
 
 
+                    <div class="form-group">
+                        <div class="form-check form-check-inline">
+                            <input id="diagonal-check" class="form-check-input" type="checkbox" name="diagonal">
+                            <label for="diagonal-check" class="form-label">Allow Diagonal Movement?</label>
 
-<!--                    <div class="form-group">-->
-<!--                        <div class="form-text">-->
-<!--                            Style-->
-<!--                        </div>-->
-<!--                        <div class="form-check form-check-inline">-->
-<!--                            <input id="grid-radio" class="form-check-input" type="radio" name="style" checked>-->
-<!--                            <label for="grid-radio" class="form-label">Grid</label>-->
+                        </div>
 
-<!--                        </div>-->
-<!--                        <div class="form-check form-check-inline">-->
-<!--                            <input id="poly-radio" class="form-check-input" type="radio" name="style">-->
-<!--                            <label for="poly-radio" class="form-label"> Poly </label>-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    </div>
                     <hr>
 
                     <div class="form-group">
