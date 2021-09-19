@@ -372,13 +372,20 @@ function drawPathToTarget(outputContainer, output, stage) {
 
 function drawDistances(outputContainer, output, stage) {
 
+    function fontSize(numDigits) {
+        return -2.8 * numDigits + 24;
+    }
+
     for (let i = 0; i < distList.length; i++) {
 
         let pt = distList[i].point;
         let dist = distList[i].dist;
 
 
-        let text = new createjs.Text(Math.floor(dist), "18px Helvetica", distLabelColor || DEFAULT_DIST_LABEL_COLOR);
+        let txt = Math.floor(dist);
+
+        let numDigits = Math.ceil(Math.log10(txt));
+        let text = new createjs.Text(txt, Math.ceil(fontSize(numDigits)) + "px Helvetica", distLabelColor || DEFAULT_DIST_LABEL_COLOR);
         text.set({
             textAlign: "center",
             textBaseline: "middle",
@@ -396,6 +403,7 @@ function disableSettings() {
     document.getElementById("dijkstra-radio").setAttribute("disabled", "");
     document.getElementById("aStar-radio").setAttribute("disabled", "");
     document.getElementById("diagonal-check").setAttribute("disabled", "");
+    document.getElementById("heuristic-type").setAttribute("disabled", "");
     document.getElementById("start-x-input").setAttribute("disabled", "");
     document.getElementById("start-y-input").setAttribute("disabled", "");
     document.getElementById("end-x-input").setAttribute("disabled", "");
@@ -410,6 +418,7 @@ function enableSettings() {
     document.getElementById("dijkstra-radio").removeAttribute("disabled");
     document.getElementById("aStar-radio").removeAttribute("disabled");
     document.getElementById("diagonal-check").removeAttribute("disabled");
+    document.getElementById("heuristic-type").removeAttribute("disabled");
     document.getElementById("start-x-input").removeAttribute("disabled");
     document.getElementById("start-y-input").removeAttribute("disabled");
     document.getElementById("end-x-input").removeAttribute("disabled");
