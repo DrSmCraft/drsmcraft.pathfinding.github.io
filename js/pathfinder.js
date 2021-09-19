@@ -1,10 +1,18 @@
 function hashPosition() {
 
+    // switch (arguments.length) {
+    //     case 1:
+    //         return ((arguments[0].x) * 0x1f1f1f1f) ^ arguments[0].y;
+    //     case 2:
+    //         return ((arguments[0]) * 0x1f1f1f1f) ^ arguments[1];
+    //
+    // }
+
     switch (arguments.length) {
         case 1:
-            return ((arguments[0].x + 3) * 0x1f1f1f1f) ^ arguments[0].y;
+            return "(" + arguments[0].x + "," + arguments[0].y + ")";
         case 2:
-            return ((arguments[0] + 3) * 0x1f1f1f1f) ^ arguments[1];
+            return "(" + arguments[0] + "," + arguments[1] + ")";
 
     }
 }
@@ -19,17 +27,22 @@ class Dijkstra {
         this.target = target;
         this.targetHash = hashPosition(target);
         this.obstacles = obstacles;
-        this.q = {} // Turn this into a map
+        this.q = {}
+        this.hashes = {}
         this.dist = {}
         this.prev = {}
         this.done = false;
-
+        this.step = 0;
+        this.reachedTarget = false;
 
         for (let i = 0; i < graph.length; i++) {
             let point = graph[i];
-            this.dist[hashPosition(point)] = Number.MAX_VALUE;
-            this.prev[hashPosition(point)] = null;
-            this.q[hashPosition(point)] = point;
+            let hashPoint = hashPosition(point);
+            this.dist[hashPoint] = Number.MAX_VALUE;
+            this.prev[hashPoint] = null;
+            this.q[hashPoint] = point;
+            this.hashes[hashPoint] = point;
+
 
         }
         this.dist[hashPosition(source)] = 0;
@@ -39,12 +52,21 @@ class Dijkstra {
     runOneStep() {
         if (this.u == this.targetHash) {
             this.done = true;
+            this.reachedTarget = true;
+
             return;
         }
 
+        this.step++;
         this.u = this.getNodeWithMinDistance();
 
-        let node = this.q[this.u]; // This is breaking on second iteration
+        if (this.u == null) {
+            this.done = true;
+            this.reachedTarget = false;
+            return;
+        }
+
+        let node = this.q[this.u];
 
         delete this.q[this.u];
 
@@ -62,8 +84,6 @@ class Dijkstra {
                 }
             }
         }
-
-
     }
 
     getNodeWithMinDistance() {
@@ -119,16 +139,35 @@ class Dijkstra {
     }
 
 
+    getPathToTarget() {
+        let lst = [];
+
+        let prev = this.prev[this.targetHash];
+        while (prev != null) {
+            lst.push(this.hashes[prev]);
+            prev = this.prev[prev];
+        }
+        return lst;
+    }
+
+    getDist() {
+        let lst = [];
+        for (const distKey in this.dist) {
+            let point = this.hashes[distKey];
+            let dist = this.dist[distKey];
+            if (dist < Number.MAX_VALUE)
+                lst.push({point: point, dist: dist});
+        }
+        return lst;
+    }
+
+
 }
 
-//
-// let dij = new Dijkstra([{x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 2, y: 1},
-//     {x: 0, y: 2}, {x: 1, y: 2}, {x: 2, y: 2}], {x: 0, y: 0}, {x: 2, y: 2}, {})
-//
-//
-// let step = 1;
-// while (!dij.done) {
-//     console.log("Step " + step);
-//     dij.runOneStep();
-//     step++;
-// }
+
+
+
+
+
+
+

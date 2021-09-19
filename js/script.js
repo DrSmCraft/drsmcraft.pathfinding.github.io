@@ -11,18 +11,20 @@ var obstacleFocused = false;
 var mouseDragging = false;
 var ctrlDown = false;
 var visualizing = false;
+var pathfinder = null;
+var distList = [];
+var pathToTarget = [];
 
-let pathfinder = null;
 
 function getListOfPoints() {
     let lst = []
-    for (let y = 0; y < size + 1; y++) {
-        for (let x = 0; x < size + 1; x++) {
+
+    for (let y = 0; y < (size / SPACING) + 1; y++) {
+        for (let x = 0; x < (size / SPACING) + 1; x++) {
             let hash = hashPosition(x, y);
-            if (!hash in obstacles) {
+            if (!(hash in obstacles)) {
                 lst.push({x: x, y: y});
             }
-
         }
     }
     return lst;
@@ -248,6 +250,35 @@ function drawObstacles(outputContainer, output, stage) {
 
 }
 
+function drawPathToTarget(outputContainer, output, stage){
+    var shape = new createjs.Shape();
+
+    for (let i = 0; i < pathToTarget.length; i++) {
+
+        let pt = pathToTarget[i];
+        console.log(pt);
+        shape.graphics.beginFill("white").drawRect(pt.x * SPACING, pt.y * SPACING, SPACING, SPACING);
+
+    }
+    stage.addChild(shape);
+}
+
+
+function drawDistances(outputContainer, output, stage) {
+    for (let i = 0; i < distList.length; i++) {
+
+        let pt = distList[i].point;
+        let dist = distList[i].dist;
+
+        let text = new createjs.Text(dist, "20px Arial", "#ff7700");
+        text.x = pt.x * SPACING + (SPACING * 0.3);
+        text.y = pt.y * SPACING + (SPACING * 0.3);
+        stage.addChild(text);
+
+
+    }
+}
+
 
 function disableSettings() {
     document.getElementById("poly-radio").setAttribute("disabled", "");
@@ -261,6 +292,8 @@ function disableSettings() {
     document.getElementById("end-x-input").setAttribute("disabled", "");
     document.getElementById("end-y-input").setAttribute("disabled", "");
     document.getElementById("obstacle-listbox").setAttribute("disabled", "");
+    document.getElementById("obstacle-listbox").setAttribute("disabled", "");
+    document.getElementById("start-btn").setAttribute("disabled", "");
 
 }
 
@@ -277,6 +310,8 @@ function enableSettings() {
     document.getElementById("end-x-input").removeAttribute("disabled");
     document.getElementById("end-y-input").removeAttribute("disabled");
     document.getElementById("obstacle-listbox").removeAttribute("disabled");
+    document.getElementById("start-btn").removeAttribute("disabled");
+
 
 }
 
@@ -298,7 +333,19 @@ function startVisualization() {
     disableSettings();
     enableControls();
     visualizing = true;
-    pathfinder = new Dijkstra(getListOfPoints(), {x: 0, y: 0}, {x: 5, y: 5}, obstacles);
+
+    let startX = document.getElementById("start-x-input").value;
+    let startY = document.getElementById("start-y-input").value;
+    // startXInput.setAttribute("max", size / SPACING - 1);
+    // startYInput.setAttribute("max", size / SPACING - 1);
+
+
+    let endX = document.getElementById("end-x-input").value;
+    let endY = document.getElementById("end-y-input").value;
+    // startXInput.setAttribute("max", size / SPACING - 1);
+    // startYInput.setAttribute("max", size / SPACING - 1);
+
+    pathfinder = new Dijkstra(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
 
 
 }
@@ -308,18 +355,42 @@ function stopVisualization() {
     disableControls();
     visualizing = false;
     pathfinder = null;
+    distList = [];
+    pathToTarget = [];
 }
 
 
-
-function runVisualizationOneStep(){
-    if(!visualizing || pathfinder == null){
+function runVisualization() {
+    if (!visualizing || pathfinder == null) {
         return;
     }
-    pathfinder.runOneStep();
+    while (!pathfinder.done) {
+        pathfinder.runOneStep();
+    }
+    document.getElementById("step-label").innerText = "Step " + pathfinder.step;
 
+
+    distList = pathfinder.getDist();
+    pathToTarget = pathfinder.getPathToTarget();
+}
+
+function runVisualizationOneStep() {
+    if (!visualizing || pathfinder == null) {
+        return;
+    }
+    if (!pathfinder.done) {
+        pathfinder.runOneStep();
+        document.getElementById("step-label").innerText = "Step " + pathfinder.step;
+    } else {
+        pathToTarget = pathfinder.getPathToTarget();
+        document.getElementById("step-label").innerText = "Sim Finished";
+    }
+
+
+    distList = pathfinder.getDist();
 
 }
+
 createjs.Ticker.addEventListener("tick", mainLoop);
 
 function mainLoop(e) {
@@ -356,10 +427,7 @@ function mainLoop(e) {
         let pt = obstacles[key];
         let option = document.createElement("option");
         option.innerText = "(" + pt.x + ", " + pt.y + ")";
-
         obstacleListbox.appendChild(option);
-
-
     }
 
     var outputContainer = document.getElementById("output-container");
@@ -369,11 +437,17 @@ function mainLoop(e) {
     stage.clear();
 
     drawGrid(outputContainer, output, stage);
-
     drawObstacles(outputContainer, output, stage);
     drawStartOverlay(outputContainer, output, stage, startX, startY);
     drawEndOverlay(outputContainer, output, stage, endX, endY);
 
+    if (visualizing && distList.length > 0) {
+        drawDistances(outputContainer, output, stage);
+    }
+
+    if(pathToTarget.length > 0){
+        drawPathToTarget(outputContainer, output, stage);
+    }
 
     if (mousePosX > -1 && mousePosY > -1)
         drawMouseOverlay(outputContainer, output, stage);

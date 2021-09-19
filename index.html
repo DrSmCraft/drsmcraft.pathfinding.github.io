@@ -57,14 +57,16 @@
 
 
             <div class="controls col-6 mx-auto  align-content-center align-self-center text-center">
-                <button id="run-btn" class="form-submit control-btn" onclick="" disabled>Run</button>
-                <button id="run-once-btn" class="form-submit control-btn" disabled onclick="runVisualizationOneStep();">
+                <button id="run-btn" class="form-submit control-btn" onclick="runVisualization();" disabled>Run</button>
+                <button id="run-once-btn" class="form-submit control-btn" onclick="runVisualizationOneStep();" disabled>
                     Run 1 Step
                 </button>
                 <button id="stop-btn" class=" form-submit control-btn" onclick="stopVisualization();"
                         disabled>
                     Stop
                 </button>
+
+                <p id="step-label" class="text-center"></p>
 
 
             </div>
@@ -146,7 +148,7 @@
 
 
                     <div class="form-group">
-                        <input class="form-submit mx-auto d-block" type="submit" value="Start">
+                        <input id="start-btn" class="form-submit mx-auto d-block" type="submit" value="Start">
                     </div>
                 </form>
 
