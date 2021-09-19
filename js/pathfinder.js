@@ -150,7 +150,7 @@ class Dijkstra {
         return lst;
     }
 
-    getDist() {
+    getDistances() {
         let lst = [];
         for (const distKey in this.dist) {
             let point = this.hashes[distKey];
@@ -158,6 +158,7 @@ class Dijkstra {
             if (dist < Number.MAX_VALUE)
                 lst.push({point: point, dist: dist});
         }
+
         return lst;
     }
 

@@ -1,9 +1,109 @@
 const LINE_THICKNESS = 1;
 const SPACING = 30;
+const DEFAULT_DIST_LABEL_COLOR = "#ff7700";
+const DEFAULT_SOURCE_COLOR = "#ff0000";
+const DEFAULT_TARGET_COLOR = "#0000ff";
+const DEFAULT_PATH_COLOR = "#ff00ff";
+const DEFAULT_OBSTACLE_COLOR = "#777777";
+
+
+var distLabelColor = DEFAULT_DIST_LABEL_COLOR;
+var sourceColor = DEFAULT_SOURCE_COLOR;
+var targetColor = DEFAULT_TARGET_COLOR;
+var pathColor = DEFAULT_PATH_COLOR;
+var obstacleColor = DEFAULT_OBSTACLE_COLOR;
+
+
+function extractPropertyFomCss(css, propertyToExtract) {
+    let start = css.indexOf("{") + 1;
+    let end = css.indexOf("}");
+    css = css.substring(start, end);
+    let properties = css.split(";");
+
+    for (const property of properties) {
+
+        let splitPoint = property.indexOf(":");
+        let name = property.substring(0, splitPoint).toLowerCase().trim();
+        let value = property.substring(splitPoint + 2, property.length).toLowerCase().trim();
+
+        if (name == propertyToExtract) {
+            return value;
+        }
+
+    }
+
+    return null;
+
+
+}
+
+function setCssColors() {
+    let sheet = document.styleSheets[4];
+    let distColorChanged = false;
+    let sourceColorChanged = false;
+    let targetColorChanged = false;
+    let pathColorChanged = false;
+    let obsColorChanged = false;
+
+    for (let j = 0; j < sheet.rules.length; j++) {
+        let rule = sheet.rules[j];
+        if (rule.selectorText !== undefined) {
+            let c = extractPropertyFomCss(rule.cssText, "color");
+
+            if (c == null) {
+                continue;
+            }
+
+            console.log(rule.selectorText);
+
+            if (rule.selectorText.indexOf(".source") > -1) {
+                sourceColor = c;
+                sourceColorChanged = true;
+            } else if (rule.selectorText.indexOf(".target") > -1) {
+                targetColor = c;
+                targetColorChanged = true;
+            } else if (rule.selectorText.indexOf(".distance") > -1) {
+                distLabelColor = c;
+                distColorChanged = true;
+            } else if (rule.selectorText.indexOf(".obstacle") > -1) {
+                obstacleColor = c;
+
+                obsColorChanged = true;
+            } else if (rule.selectorText.indexOf(".path") > -1) {
+                pathColor = c;
+                pathColorChanged = true;
+            }
+        }
+
+    }
+
+    console.log(obsColorChanged);
+    if (!distColorChanged) {
+        distLabelColor = DEFAULT_DIST_LABEL_COLOR;
+    }
+    if (!sourceColorChanged) {
+        distLabelColor = DEFAULT_SOURCE_COLOR;
+    }
+    if (!targetColorChanged) {
+        distLabelColor = DEFAULT_TARGET_COLOR;
+    }
+    if (!pathColorChanged) {
+        distLabelColor = DEFAULT_PATH_COLOR;
+    }
+    if (!obsColorChanged) {
+        distLabelColor = DEFAULT_OBSTACLE_COLOR;
+    }
+
+    changed = true;
+
+}
+
+
 var mousePosX = -1;
 var mousePosY = -1;
 var size = 700;
 var obstacles = {}
+var changed = true;
 
 var startFocused = false;
 var endFocused = false;
@@ -78,9 +178,12 @@ function outputKeyUp(e) {
 
 
 function handleMouseOverOutput(e, dragging) {
-
     if (visualizing) {
         return;
+    }
+
+    if (dragging) {
+        changed = true;
     }
     let sender = e.target || e.srcElement;
     let posX = mousePosXToGridX(e.x, sender.getBoundingClientRect().x);
@@ -156,6 +259,7 @@ function setThemeLight() {
     const expires = "expires=" + date.toUTCString();
 
     document.cookie = "theme=light; " + expires + "; path=/";
+    setCssColors();
     return false;
 }
 
@@ -169,15 +273,19 @@ function setThemeDark() {
     const expires = "expires=" + date.toUTCString();
 
     document.cookie = "theme=dark; " + expires + "; path=/";
+    setCssColors();
     return false;
 }
 
 
 function drawGrid(outputContainer, output, stage) {
 
-    size = Math.min(outputContainer.clientWidth, outputContainer.clientHeight);
-    size = clamp(700, 800, size);
-    size = Math.floor(size / SPACING) * SPACING
+    const numGrid = 20;
+    // size = Math.min(outputContainer.clientWidth, outputContainer.clientHeight);
+    // size = clamp(700, 800, size);
+    // size = Math.floor(size / SPACING) * SPACING
+
+    size = numGrid * SPACING;
     output.setAttribute("width", size);
     output.setAttribute("height", size);
 
@@ -226,14 +334,14 @@ function mouseMoveOverOutput(e) {
 
 function drawStartOverlay(outputContainer, output, stage, posX, posY) {
     var shape = new createjs.Shape();
-    shape.graphics.beginFill("blue").drawRect(posX * SPACING, posY * SPACING, SPACING, SPACING);
+    shape.graphics.beginFill(sourceColor).drawRect(posX * SPACING, posY * SPACING, SPACING, SPACING);
     stage.addChild(shape);
 }
 
 
 function drawEndOverlay(outputContainer, output, stage, posX, posY) {
     var shape = new createjs.Shape();
-    shape.graphics.beginFill("red").drawRect(posX * SPACING, posY * SPACING, SPACING, SPACING);
+    shape.graphics.beginFill(targetColor).drawRect(posX * SPACING, posY * SPACING, SPACING, SPACING);
     stage.addChild(shape);
 }
 
@@ -243,21 +351,20 @@ function drawObstacles(outputContainer, output, stage) {
     for (let key in obstacles) {
 
         let pt = obstacles[key];
-        shape.graphics.beginFill("grey").drawRect(pt.x * SPACING, pt.y * SPACING, SPACING, SPACING);
+        shape.graphics.beginFill(obstacleColor).drawRect(pt.x * SPACING, pt.y * SPACING, SPACING, SPACING);
 
     }
     stage.addChild(shape);
 
 }
 
-function drawPathToTarget(outputContainer, output, stage){
+function drawPathToTarget(outputContainer, output, stage) {
     var shape = new createjs.Shape();
 
     for (let i = 0; i < pathToTarget.length; i++) {
 
         let pt = pathToTarget[i];
-        console.log(pt);
-        shape.graphics.beginFill("white").drawRect(pt.x * SPACING, pt.y * SPACING, SPACING, SPACING);
+        shape.graphics.beginFill(pathColor).drawRect(pt.x * SPACING, pt.y * SPACING, SPACING, SPACING);
 
     }
     stage.addChild(shape);
@@ -265,12 +372,13 @@ function drawPathToTarget(outputContainer, output, stage){
 
 
 function drawDistances(outputContainer, output, stage) {
+
     for (let i = 0; i < distList.length; i++) {
 
         let pt = distList[i].point;
         let dist = distList[i].dist;
 
-        let text = new createjs.Text(dist, "20px Arial", "#ff7700");
+        let text = new createjs.Text(dist + "", "20px Arial", distLabelColor);
         text.x = pt.x * SPACING + (SPACING * 0.3);
         text.y = pt.y * SPACING + (SPACING * 0.3);
         stage.addChild(text);
@@ -336,14 +444,9 @@ function startVisualization() {
 
     let startX = document.getElementById("start-x-input").value;
     let startY = document.getElementById("start-y-input").value;
-    // startXInput.setAttribute("max", size / SPACING - 1);
-    // startYInput.setAttribute("max", size / SPACING - 1);
-
 
     let endX = document.getElementById("end-x-input").value;
     let endY = document.getElementById("end-y-input").value;
-    // startXInput.setAttribute("max", size / SPACING - 1);
-    // startYInput.setAttribute("max", size / SPACING - 1);
 
     pathfinder = new Dijkstra(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
 
@@ -370,8 +473,10 @@ function runVisualization() {
     document.getElementById("step-label").innerText = "Step " + pathfinder.step;
 
 
-    distList = pathfinder.getDist();
+    distList = pathfinder.getDistances();
+
     pathToTarget = pathfinder.getPathToTarget();
+    changed = true;
 }
 
 function runVisualizationOneStep() {
@@ -388,12 +493,18 @@ function runVisualizationOneStep() {
 
 
     distList = pathfinder.getDist();
+    changed = true;
+
 
 }
 
 createjs.Ticker.addEventListener("tick", mainLoop);
 
 function mainLoop(e) {
+
+    if (!changed) {
+        return;
+    }
 
     let startXInput = document.getElementById("start-x-input");
     let startYInput = document.getElementById("start-y-input");
@@ -426,6 +537,7 @@ function mainLoop(e) {
     for (let key in obstacles) {
         let pt = obstacles[key];
         let option = document.createElement("option");
+        option.classList.add("obstacle");
         option.innerText = "(" + pt.x + ", " + pt.y + ")";
         obstacleListbox.appendChild(option);
     }
@@ -437,23 +549,29 @@ function mainLoop(e) {
     stage.clear();
 
     drawGrid(outputContainer, output, stage);
+
+    if (pathToTarget.length > 0) {
+        drawPathToTarget(outputContainer, output, stage);
+    }
+
     drawObstacles(outputContainer, output, stage);
+
     drawStartOverlay(outputContainer, output, stage, startX, startY);
     drawEndOverlay(outputContainer, output, stage, endX, endY);
+
 
     if (visualizing && distList.length > 0) {
         drawDistances(outputContainer, output, stage);
     }
 
-    if(pathToTarget.length > 0){
-        drawPathToTarget(outputContainer, output, stage);
-    }
 
     if (mousePosX > -1 && mousePosY > -1)
         drawMouseOverlay(outputContainer, output, stage);
 
 
     stage.update(e);
+
+    changed = false;
 
 
 }

@@ -12,8 +12,6 @@
 
 
     <script src="js/createjs/easeljs-NEXT.js"></script>
-    <script src="js/pathfinder.js"></script>
-    <script src="js/script.js"></script>
 
 
     <link rel="stylesheet" href="css/bootstrap.css">
@@ -22,6 +20,8 @@
     <link rel="stylesheet" href="css/bootstrap-utilities.css">
     <link id="theme-style" rel="stylesheet" href="css/style-light.css">
 
+    <script src="js/pathfinder.js"></script>
+    <script src="js/script.js"></script>
 
 </head>
 <body id="body">
@@ -117,11 +117,11 @@
                             Starting Point
                         </div>
 
-                        <label class="form-label-inline" for="start-x-input">X</label>
+                        <label class="form-label-inline source" for="start-x-input">X</label>
                         <input id="start-x-input" type="number" min="0" max="100" value="0" onclick="startFocus()"
                                required>
 
-                        <label class="form-label-inline" for="start-y-input">Y</label>
+                        <label class="form-label-inline source" for="start-y-input">Y</label>
                         <input id="start-y-input" type="number" min="0" max="100" value="0" onclick="startFocus()"
                                required>
                     </div>
@@ -131,10 +131,10 @@
                             Ending Point
                         </div>
 
-                        <label class="form-text-inline" for="end-x-input">X</label>
+                        <label class="form-text-inline target" for="end-x-input">X</label>
                         <input id="end-x-input" type="number" min="0" max="100" value="1" onclick="endFocus()" required>
 
-                        <label class="form-text-inline" for="end-y-input">Y</label>
+                        <label class="form-text-inline target" for="end-y-input">Y</label>
                         <input id="end-y-input" type="number" min="0" max="100" value="1" onclick="endFocus()" required>
                     </div>
 

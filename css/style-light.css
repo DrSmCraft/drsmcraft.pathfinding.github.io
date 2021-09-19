@@ -113,5 +113,22 @@ canvas {
     border-style: groove;
     border-color: #0c4128;
     margin: 10px;
+}
 
+.source {
+    color: red;
+}
+
+.target {
+    color: blue;
+}
+
+
+
+.distance {
+    color: #6a1a21;
+}
+
+.path {
+    color: #0dcaf0;
 }
