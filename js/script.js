@@ -7,6 +7,7 @@ const DEFAULT_PATH_COLOR = "#ff00ff";
 const DEFAULT_OBSTACLE_COLOR = "#777777";
 
 var currentTheme = "light";
+var showDistances = true;
 var distLabelColor = DEFAULT_DIST_LABEL_COLOR;
 var sourceColor = DEFAULT_SOURCE_COLOR;
 var targetColor = DEFAULT_TARGET_COLOR;
@@ -157,11 +158,25 @@ function startFocus(e) {
     startFocused = true;
     endFocused = false;
     obstacleFocused = false;
+
+
+}
+
+function startBlur(e){
+    startFocused = false;
+    endFocused = false;
+    obstacleFocused = false;
 }
 
 function endFocus(e) {
     startFocused = false;
     endFocused = true;
+    obstacleFocused = false;
+}
+
+function endBlur(e){
+    startFocused = false;
+    endFocused = false;
     obstacleFocused = false;
 }
 
@@ -172,7 +187,7 @@ function obstacleFocus(e) {
 
 }
 
-function noFocus(e) {
+function obstacleBlur(e){
     startFocused = false;
     endFocused = false;
     obstacleFocused = false;
@@ -385,6 +400,10 @@ function drawDistances(outputContainer, output, stage) {
         let txt = Math.floor(dist);
 
         let numDigits = Math.ceil(Math.log10(txt));
+        if(txt == 0){
+            numDigits = 1;
+        }
+
         let text = new createjs.Text(txt, Math.ceil(fontSize(numDigits)) + "px Helvetica", distLabelColor || DEFAULT_DIST_LABEL_COLOR);
         text.set({
             textAlign: "center",
@@ -433,14 +452,14 @@ function enableControls() {
     document.getElementById("run-btn").removeAttribute("disabled");
     document.getElementById("run-once-btn").removeAttribute("disabled");
     document.getElementById("stop-btn").removeAttribute("disabled");
-
+    document.getElementById("show-dist-check").removeAttribute("disabled");
 }
 
 function disableControls() {
     document.getElementById("run-btn").setAttribute("disabled", "");
     document.getElementById("run-once-btn").setAttribute("disabled", "");
     document.getElementById("stop-btn").setAttribute("disabled", "");
-
+    document.getElementById("show-dist-check").setAttribute("disabled", "");
 }
 
 function startVisualization() {
@@ -471,8 +490,10 @@ function startVisualization() {
             pathfinder.heuristicType = "penalizeVertical";
 
         }
-
     }
+    document.getElementById("show-dist-check").checked = true;
+
+    showDistances = true;
 
 
 }
@@ -586,7 +607,7 @@ function mainLoop(e) {
     drawEndOverlay(outputContainer, output, stage, endX, endY);
 
 
-    if (visualizing && distList.length > 0) {
+    if (visualizing && distList.length > 0 && showDistances) {
         drawDistances(outputContainer, output, stage);
     }
 

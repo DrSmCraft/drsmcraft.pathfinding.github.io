@@ -226,20 +226,19 @@ class AStar extends Dijkstra {
     constructor(graph, source, target, obstacles) {
         super(graph, source, target, obstacles);
         this.heuristicType = 'euclidean';
+
     }
 
 
     heuristicValue(node, targetNode) {
         if (this.heuristicType == 'euclidean') {
-            return euclideanDistance(node, targetNode);
+            return euclideanDistance(node, targetNode) / euclideanDistance(this.source, this.target);
         } else if (this.heuristicType == 'manhattan') {
-            return manhattanDistance(node, targetNode);
-        }
-        else if(this.heuristicType == 'penalizeHorizontal'){
-            return penalizeHorizontal(node, targetNode);
-        }
-        else if(this.heuristicType == 'penalizeVertical'){
-            return penalizeVertical(node, targetNode);
+            return manhattanDistance(node, targetNode) / manhattanDistance(this.source, this.target);
+        } else if (this.heuristicType == 'penalizeHorizontal') {
+            return penalizeHorizontal(node, targetNode) / manhattanDistance(this.source, this.target);
+        } else if (this.heuristicType == 'penalizeVertical') {
+            return penalizeVertical(node, targetNode) / manhattanDistance(this.source, this.target);
         }
         return 0;
     }
