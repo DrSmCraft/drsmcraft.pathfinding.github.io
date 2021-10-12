@@ -52,35 +52,8 @@ body {
     padding-left: 2px;
     padding-right: 2px;
     fill: #bddcff;
-
-
 }
 
-.project-card {
-    text-underline-style: none;
-    color: black;
-    text-decoration: none;
-
-}
-
-.project-card:hover {
-
-    border: #0a53be;
-    border-radius: 10px;
-    border-style: groove;
-    color: black;
-    text-underline-style: none;
-    text-decoration: none;
-
-}
-
-
-#about-card {
-    width: 30%;
-    margin-top: 50px;
-    margin-bottom: 20px;
-
-}
 
 .body-title {
     padding-top: 20px;

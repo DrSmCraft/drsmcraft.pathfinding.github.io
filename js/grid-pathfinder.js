@@ -26,7 +26,7 @@ function penalizeVertical(pt1, pt2) {
     return pt2.y - pt1.y;
 }
 
-class Pathfinder {
+class GridPathfinder {
 
     constructor(graph, source, target, obstacles) {
         this.graph = graph;
@@ -47,7 +47,7 @@ class Pathfinder {
 }
 
 // Taken from https://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode
-class Dijkstra extends Pathfinder {
+class GridDijkstra extends GridPathfinder {
     constructor(graph, source, target, obstacles) {
         super(graph, source, target, obstacles);
         this.q = {};
@@ -128,7 +128,6 @@ class Dijkstra extends Pathfinder {
         let right = {x: node.x + 1, y: node.y};
         let up = {x: node.x, y: node.y - 1};
         let down = {x: node.x, y: node.y + 1};
-
 
         if (!(hashPosition(left) in this.obstacles)) {
             if (left.x > -1 && left.x < UPPER_BOUND && left.y > -1 && left.y < UPPER_BOUND) {
@@ -222,7 +221,7 @@ class Dijkstra extends Pathfinder {
 }
 
 
-class AStar extends Dijkstra {
+class GridAStar extends GridDijkstra {
     constructor(graph, source, target, obstacles) {
         super(graph, source, target, obstacles);
         this.heuristicType = 'euclidean';

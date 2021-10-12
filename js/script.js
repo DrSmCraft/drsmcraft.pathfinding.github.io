@@ -474,10 +474,10 @@ function startVisualization() {
     let endY = document.getElementById("end-y-input").value;
 
     if ($('#dijkstra-radio').prop("checked")) {
-        pathfinder = new Dijkstra(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
+        pathfinder = new GridDijkstra(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
         pathfinder.allowDiagonals = $("#diagonal-check").prop("checked");
     } else {
-        pathfinder = new AStar(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
+        pathfinder = new GridAStar(getListOfPoints(), {x: startX, y: startY}, {x: endX, y: endY}, obstacles);
         pathfinder.allowDiagonals = $("#diagonal-check").prop("checked");
 
         if ($("#heuristic-type :selected").val() == "Euclidean Distance") {

@@ -56,32 +56,6 @@ body {
 
 }
 
-.project-card {
-    text-underline-style: none;
-    color: black;
-    text-decoration: none;
-
-}
-
-.project-card:hover {
-
-    border: #0a53be;
-    border-radius: 10px;
-    border-style: groove;
-    color: black;
-    text-underline-style: none;
-    text-decoration: none;
-
-}
-
-
-#about-card {
-    width: 30%;
-    margin-top: 50px;
-    margin-bottom: 20px;
-
-}
-
 h1, h2, h3, h4, h5, h6 {
     color: #ffffff;
 }
@@ -149,7 +123,7 @@ canvas {
 
 
 .obstacle {
-    /*color: #002e52;*/
+
     color: #000000;
 
 }
