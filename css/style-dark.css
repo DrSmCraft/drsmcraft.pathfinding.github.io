@@ -56,7 +56,7 @@ body {
 
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, .list-inline-item {
     color: #ffffff;
 }
 
@@ -130,4 +130,19 @@ canvas {
 
 .path {
     color: #0068B8;
+}
+
+
+.examples {
+    padding: 10px;
+    background-color: #789aa9;
+}
+
+.examples-show {
+    visibility: inherit;
+}
+
+
+.examples-hide {
+    visibility: hidden;
 }

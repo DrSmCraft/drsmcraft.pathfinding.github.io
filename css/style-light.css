@@ -114,3 +114,20 @@ canvas {
     color: #0dcaf0;
 }
 
+.examples {
+    padding: 10px;
+
+    background: #F0F0EF;
+    border-radius: 2px;
+    border-style: groove;
+    border-color: #0c4128;
+}
+
+.examples-show {
+    visibility: inherit;
+}
+
+
+.examples-hide {
+    visibility: hidden;
+}
